@@ -1,3 +1,8 @@
+# AI assistant instructions
+Claude.md
+.claude/
+AGENTS.md
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -149,6 +154,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 env/
