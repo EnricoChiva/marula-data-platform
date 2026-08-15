@@ -112,6 +112,47 @@ docker compose down
 
 ---
 
+# 🐍 Python-Entwicklungsumgebung
+
+Die Pipeline ist als installierbare Python-Anwendung mit `src`-Layout
+aufgebaut. `uv` verwaltet die Python-Version, Abhängigkeiten, virtuelle
+Umgebung und das Lockfile.
+
+## Voraussetzungen
+
+```bash
+brew install uv
+```
+
+## Umgebung einrichten
+
+```bash
+uv sync
+```
+
+`uv sync` installiert bei Bedarf die festgelegte Python-Version, erzeugt die
+lokale `.venv` und installiert exakt die in `uv.lock` aufgelösten
+Abhängigkeiten. Eine manuelle Aktivierung ist für den normalen Workflow nicht
+nötig.
+
+## Anwendung und Qualitätschecks ausführen
+
+```bash
+uv run marula-pipeline
+uv run pytest
+uv run ruff check .
+uv run ruff format --check .
+```
+
+Wer die virtuelle Umgebung explizit aktivieren möchte, kann weiterhin den
+klassischen Weg verwenden:
+
+```bash
+source .venv/bin/activate
+```
+
+---
+
 # 📖 Projektphilosophie
 
 Anstatt sofort eine komplexe Enterprise-Architektur aufzubauen, entsteht die Plattform iterativ.
