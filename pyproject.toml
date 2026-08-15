@@ -5,7 +5,11 @@ description = "A self-hosted data platform for learning modern data engineering.
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 classifiers = ["Private :: Do Not Upload"]
-dependencies = []
+dependencies = [
+    "httpx>=0.28.1",
+    "minio>=7.2.20",
+    "pydantic-settings>=2.15.0",
+]
 
 [project.scripts]
 marula-pipeline = "marula_data_platform.cli:main"

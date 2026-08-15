@@ -153,6 +153,66 @@ source .venv/bin/activate
 
 ---
 
+# ⚡ Erste Raw-Ingestion
+
+Die erste Pipeline ruft die öffentliche Nettostromerzeugung pro Erzeugungsart
+über die Energy-Charts-v2-API ab und speichert die unveränderte JSON-Antwort in
+MinIO:
+
+```text
+Energy-Charts API
+        ↓
+clients/energy_charts.py       HTTP, Timeout und Fehlerbehandlung
+        ↓
+pipelines/public_power.py      Extract-Entscheidung und Orchestrierung
+        ↓
+storage/minio.py               unverändertes JSON in der Raw-Schicht
+```
+
+Die Verantwortlichkeiten sind logisch getrennt, bleiben für die erste Pipeline
+aber in wenigen Modulen. Die Transformation wird später als reine Funktion in
+`pipelines/public_power.py` ergänzt. PostgreSQL erhält anschließend einen
+eigenen technischen Adapter.
+
+## Pipeline lokal ausführen
+
+Zunächst muss MinIO laufen:
+
+```bash
+docker compose up -d minio
+```
+
+Danach kann ein abgeschlossener Tag geladen werden:
+
+```bash
+uv run marula-pipeline ingest-public-power --date 2026-08-01 --country de
+```
+
+Jeder Abruf wird als unveränderlicher Snapshot gespeichert:
+
+```text
+s3://marula-raw/
+└── energy-charts/public-power/
+    └── country=de/
+        └── date=2026-08-01/
+            └── extracted_at=<UTC timestamp>.json
+```
+
+Der Pfad trennt fachliches Datum und technischen Abrufzeitpunkt. Dadurch
+bleiben nachträgliche Änderungen der Quelldaten nachvollziehbar, ohne einen
+früheren Raw-Snapshot zu überschreiben.
+
+Die Energy-Charts-Daten stehen grundsätzlich unter CC BY 4.0. Die Pipeline
+speichert deshalb Quelle, Endpoint, Lizenz, Land, Abfragedatum und Request-URL
+als Metadaten am MinIO-Objekt. Quelle: `energy-charts.info`.
+
+Für die lokale Umgebung dürfen Pipeline-Zugangsdaten und MinIO-Root-Credentials
+dieselben ungefährlichen Entwicklungswerte verwenden. Auf dem Server müssen
+`MINIO_ACCESS_KEY` und `MINIO_SECRET_KEY` zu einem separaten, eingeschränkten
+Pipeline-Benutzer gehören.
+
+---
+
 # 📖 Projektphilosophie
 
 Anstatt sofort eine komplexe Enterprise-Architektur aufzubauen, entsteht die Plattform iterativ.
