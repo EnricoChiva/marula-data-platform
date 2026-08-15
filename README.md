@@ -61,6 +61,57 @@ Weitere Ausbaustufen folgen.
 
 ---
 
+# 💻 Lokale Entwicklungsumgebung
+
+PostgreSQL und MinIO laufen lokal in Docker-Containern. Die verwendeten
+Hauptversionen entsprechen der Umgebung auf OVHCloud, während Daten und
+Zugangsdaten vollständig von der Serverumgebung getrennt bleiben.
+
+## Voraussetzungen
+
+* Docker Desktop mit Docker Compose
+
+## Erster Start
+
+```bash
+cp .env.local.example .env.local
+docker compose up -d
+docker compose ps
+```
+
+Nach erfolgreichem Start sind die Dienste ausschließlich lokal erreichbar:
+
+* PostgreSQL: `localhost:5433` (Container-intern weiterhin `5432`)
+* MinIO S3 API: `http://localhost:9000`
+* MinIO Console: `http://localhost:9001`
+
+Beim Start wird der lokale Bucket `marula-raw` automatisch angelegt. Der
+zugehörige `minio-init`-Container beendet sich danach erfolgreich; der Status
+`Exited (0)` ist für diesen einmaligen Initialisierungsschritt normal.
+
+Die Zugangsdaten stehen in der lokalen `.env.local`. Diese Datei wird nicht in
+Git eingecheckt. Die eingecheckte `.env.local.example` enthält ausschließlich
+ungefährliche Entwicklungswerte.
+
+## Stoppen und erneut starten
+
+```bash
+docker compose stop
+docker compose start
+```
+
+`stop` behält die lokalen Daten in Docker-Volumes. Um die Container zu
+entfernen und später mit denselben Daten neu zu erstellen:
+
+```bash
+docker compose down
+```
+
+> **Achtung:** `docker compose down --volumes` löscht zusätzlich alle lokalen
+> PostgreSQL- und MinIO-Daten.
+
+---
+
 # 📖 Projektphilosophie
 
 Anstatt sofort eine komplexe Enterprise-Architektur aufzubauen, entsteht die Plattform iterativ.

@@ -1,0 +1,64 @@
+name: marula-data-platform-dev
+
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  minio:
+    image: pgsty/minio:RELEASE.2026-06-18T00-00-00Z
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    env_file:
+      - .env.local
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - --fail
+        - --silent
+        - http://localhost:9000/minio/health/live
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  minio-init:
+    image: pgsty/minio:RELEASE.2026-06-18T00-00-00Z
+    depends_on:
+      minio:
+        condition: service_healthy
+    env_file:
+      - .env.local
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - >-
+        mc alias set local http://minio:9000
+        "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}" >/dev/null &&
+        mc mb --ignore-existing "local/$${MINIO_BUCKET}"
+    restart: "no"
+
+volumes:
+  postgres-data:
+  minio-data:
