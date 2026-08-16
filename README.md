@@ -23,41 +23,68 @@ Dieses Repository dient gleichzeitig als:
 
 ---
 
-# 🚀 Geplante Technologien
+# 🧱 Technologien und Komponenten
 
-Die Plattform wächst schrittweise und wird im Laufe der Zeit unter anderem folgende Technologien integrieren:
+Die Plattform wächst bewusst schrittweise. Die folgende Trennung zeigt, was
+bereits funktioniert und welche Werkzeuge erst mögliche spätere Erweiterungen
+sind.
 
-* Docker
-* Dokploy
-* PostgreSQL
-* MinIO
-* Python
-* Polars
-* Apache Superset
-* n8n
-* DuckDB
-* dbt
-* FastAPI
-* MCP Server
+## Aktuell umgesetzt
 
-Nicht alle Komponenten sind von Anfang an vorhanden – sie werden im Projektverlauf ergänzt.
+* **Docker Compose** für die reproduzierbare lokale Infrastruktur
+* **PostgreSQL 18** als lokale relationale Datenbank
+* **MinIO** als S3-kompatibler Objektspeicher und Raw-Schicht
+* **Python 3.13** für die Datenpipelines
+* **uv** für Python-Version, Abhängigkeiten und Lockfile
+* **httpx** für den Zugriff auf die Energy-Charts-API
+* **pydantic-settings** für validierte Konfiguration
+* **pytest** und **Ruff** für automatisierte Tests und Codequalität
+
+## Als Nächstes geplant
+
+* **Polars** für die Transformation der Raw-Daten
+* ein fachliches Datenmodell und eine Migrationsstrategie für PostgreSQL
+* ein PostgreSQL-Adapter mit idempotentem Load
+* ein vollständiger lokaler Datenfluss von der API über MinIO bis PostgreSQL
+
+## Mögliche spätere Erweiterungen
+
+* Dokploy und Docker für das Deployment auf dem eigenen VPS
+* Apache Superset für Analyse und Visualisierung
+* n8n für geeignete Automatisierungs- und Integrationsaufgaben
+* DuckDB und dbt für spätere analytische Anwendungsfälle
+* FastAPI und ein MCP-Server für kontrollierten Datenzugriff
+
+Diese Werkzeuge sind noch keine festgelegte Zielarchitektur. Eine Komponente
+wird erst eingeführt, wenn sie ein konkretes Problem im Projekt löst.
 
 ---
 
 # 🗺 Roadmap
 
-## Version 1
+## Version 1 — Lokaler End-to-End-Datenfluss
 
-* Repository aufsetzen
-* PostgreSQL deployen
-* MinIO deployen
-* Erste ETL-Pipeline entwickeln
-* Daten aus einer öffentlichen API abrufen
-* Rohdaten im Data Lake speichern
-* Daten transformieren
-* Daten in PostgreSQL laden
+- [x] Repository und Python-Projekt mit `src`-Layout aufsetzen
+- [x] PostgreSQL und MinIO lokal mit Docker Compose bereitstellen
+- [x] Daten aus der Energy-Charts-API abrufen
+- [x] Unveränderte Raw-Snapshots in MinIO speichern
+- [x] Erste Pipeline-Stufe automatisiert testen
+- [ ] Zieldatenmodell für die Stromerzeugungsdaten festlegen
+- [ ] Raw-Daten mit Polars transformieren
+- [ ] PostgreSQL-Schema und Migrationen erstellen
+- [ ] Transformierte Daten idempotent nach PostgreSQL laden
+- [ ] Vollständigen lokalen End-to-End-Lauf testen
 
-Weitere Ausbaustufen folgen.
+## Version 2 — Betrieb auf dem eigenen VPS
+
+- [ ] Pipeline containerisieren und reproduzierbar deployen
+- [ ] Dienste mit eingeschränkten technischen Benutzern absichern
+- [ ] Tägliche Verarbeitung eines abgeschlossenen Datentags automatisieren
+- [ ] Logging, Monitoring und Fehlerbenachrichtigung ergänzen
+- [ ] Backup- und Wiederherstellungsstrategie umsetzen und testen
+
+Weitere Ausbaustufen werden erst konkretisiert, wenn Version 1 abgeschlossen
+ist.
 
 ---
 
@@ -230,4 +257,9 @@ So entsteht über die Zeit eine vollständige, praxisnahe Data Platform.
 
 # 📄 Lizenz
 
-Dieses Projekt befindet sich aktuell im Aufbau. Eine Lizenz wird zu einem späteren Zeitpunkt ergänzt.
+Der Quellcode dieses Projekts steht unter der [MIT-Lizenz](LICENSE).
+
+Die von der Pipeline abgerufenen Energy-Charts-Daten sind davon ausgenommen.
+Für sie gelten die Lizenz- und Quellenangaben des jeweiligen Datenanbieters,
+aktuell [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) mit
+Namensnennung von `energy-charts.info`.
