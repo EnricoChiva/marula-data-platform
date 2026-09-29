@@ -161,6 +161,7 @@ source = { editable = "." }
 dependencies = [
     { name = "httpx" },
     { name = "minio" },
+    { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
 
@@ -174,6 +175,7 @@ dev = [
 requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "minio", specifier = ">=7.2.20" },
+    { name = "pydantic", specifier = ">=2.13.4" },
     { name = "pydantic-settings", specifier = ">=2.15.0" },
 ]
 
