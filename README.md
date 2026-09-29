@@ -37,7 +37,7 @@ sind.
 * **Python 3.13** für die Datenpipelines
 * **uv** für Python-Version, Abhängigkeiten und Lockfile
 * **httpx** für den Zugriff auf die Energy-Charts-API
-* **pydantic-settings** für validierte Konfiguration
+* **Pydantic** und **pydantic-settings** für validierte Quelldaten und Konfiguration
 * **pytest** und **Ruff** für automatisierte Tests und Codequalität
 
 ## Als Nächstes geplant
@@ -69,7 +69,7 @@ wird erst eingeführt, wenn sie ein konkretes Problem im Projekt löst.
 - [x] Daten aus der Energy-Charts-API abrufen
 - [x] Unveränderte Raw-Snapshots in MinIO speichern
 - [x] Erste Pipeline-Stufe automatisiert testen
-- [ ] Zieldatenmodell für die Stromerzeugungsdaten festlegen
+- [x] Zieldatenmodell für die Stromerzeugungsdaten festlegen
 - [ ] Raw-Daten mit Polars transformieren
 - [ ] PostgreSQL-Schema und Migrationen erstellen
 - [ ] Transformierte Daten idempotent nach PostgreSQL laden
@@ -203,11 +203,17 @@ eigenen technischen Adapter.
 
 ## Pipeline lokal ausführen
 
-Zunächst muss MinIO laufen:
+Zunächst MinIO starten und den Raw-Bucket idempotent anlegen:
 
 ```bash
 docker compose up -d minio
+docker compose run --rm minio-init
 ```
+
+`minio-init` wartet über seine Compose-Abhängigkeit, bis MinIO gesund ist, und
+legt anschließend den Bucket `marula-raw` an. `--ignore-existing` macht diesen
+Schritt wiederholbar; `--rm` entfernt den einmaligen Hilfscontainer nach dem
+erfolgreichen Lauf.
 
 Danach kann ein abgeschlossener Tag geladen werden:
 
